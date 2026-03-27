@@ -1,0 +1,3 @@
+# requirements.txt 스트림릿 서버에 설치할 모듈리스트
+streamlit
+gspread
