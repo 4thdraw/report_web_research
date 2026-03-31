@@ -21,3 +21,13 @@ my-skin-survey/
         └── normal.py   # 기존 app.py의 설문 폼 로직
 
 pip install -r requirements.txt 명령주기
+
+💡 가장 안전한 방법 (추천)
+
+👉 그냥 이렇게 하세요:
+
+새 프로젝트 생성
+Billing 연결
+Gemini API 활성화
+API 키 새로 발급
+.env에 넣기
