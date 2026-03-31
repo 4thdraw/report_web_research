@@ -3,6 +3,73 @@ import pandas as pd
 from modules.data_manager import SheetManager
 from modules.visualizer import SkinVisualizer
 from pages.form.normal import show_normal_form
+# app.py 상단에 추가
+from modules.chatbot import SkinChatbot
+
+def render_chatbot_ui():
+    # 1. CSS Injection: 오른쪽 하단 플로팅 버튼 및 채팅창 스타일
+    st.markdown("""
+        <style>
+        .floating-chat {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #FF4B4B;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 60px;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            z-index: 9999;
+        }
+        .st-emotion-cache-hqmjvr{
+          max-height:200px;
+        
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # 세션 상태 초기화
+    if "chat_open" not in st.session_state:
+        st.session_state.chat_open = False
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # 2. 플로팅 버튼 (버튼 클릭 시 토글)
+    if st.button("💬", key="chat_button"):
+        st.session_state.chat_open = not st.session_state.chat_open
+
+    # 3. 채팅창 (화면 우측 20~30% 차지하는 슬라이드 느낌의 사이드바/컨테이너)
+    if st.session_state.chat_open:
+        with st.sidebar: # 가장 간단하게 슬라이드 느낌을 주는 방법은 사이드바 활용입니다.
+            st.title("🤖 AI 마케팅 어드바이저")
+            st.info("설문 데이터를 기반으로 궁금한 점을 물어보세요!")
+
+            # 채팅 히스토리 표시
+            chat_container = st.container(height=500)
+            for message in st.session_state.messages:
+                with chat_container.chat_message(message["role"]):
+                    st.markdown(message["content"])
+
+            # 채팅 입력
+            if prompt := st.chat_input("메시지를 입력하세요..."):
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                with chat_container.chat_message("user"):
+                    st.markdown(prompt)
+
+                with chat_container.chat_message("assistant"):
+                    with st.spinner("생각 중..."):
+                        bot = SkinChatbot()
+                        response = bot.get_response(prompt, st.session_state.messages[:-1])
+                        st.markdown(response)
+                st.session_state.messages.append({"role": "assistant", "content": response})
+
+
+    
 
 # --- [함수 1] 구글 응답 결과 요약 보고서 (매개변수 df 추가) ---
 def render_business_summary(df): # (수정) df를 인자로 받도록 변경
@@ -99,3 +166,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    render_chatbot_ui()
