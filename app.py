@@ -6,6 +6,20 @@ from pages.form.normal import show_normal_form
 # app.py 상단에 추가
 from modules.chatbot import SkinChatbot
 
+
+@st.cache_data(ttl=300)
+def load_data():
+    db = SheetManager()
+    return db.get_all_responses_df()
+
+@st.cache_resource
+def get_chatbot():
+    return SkinChatbot()
+
+@st.cache_data
+def get_visualizer(df):
+    return SkinVisualizer(df)
+
 def render_chatbot_ui():
     # 1. CSS Injection: 오른쪽 하단 플로팅 버튼 및 채팅창 스타일
     st.markdown("""
@@ -51,6 +65,8 @@ def render_chatbot_ui():
 
             # 채팅 히스토리 표시
             chat_container = st.container(height=500)
+           
+
             for message in st.session_state.messages:
                 with chat_container.chat_message(message["role"]):
                     st.markdown(message["content"])
@@ -63,7 +79,7 @@ def render_chatbot_ui():
 
                 with chat_container.chat_message("assistant"):
                     with st.spinner("생각 중..."):
-                        bot = SkinChatbot()
+                        bot = get_chatbot()
                         response = bot.get_response(prompt, st.session_state.messages[:-1])
                         st.markdown(response)
                 st.session_state.messages.append({"role": "assistant", "content": response})
@@ -110,10 +126,13 @@ def render_business_summary(df): # (수정) df를 인자로 받도록 변경
     summary_df = pd.DataFrame(summary_list)
     st.table(summary_df)
 
+
+
 # --- [함수 2] 시각화 대시보드 ---
 def render_visual_dashboard(df):
     st.subheader("📊 실시간 데이터 시각화")
-    viz = SkinVisualizer(df)
+    #캐싱기능 추가 함수사용
+    viz = get_visualizer(df)
     
     col1, col2 = st.columns(2)
     with col1:
@@ -134,11 +153,9 @@ def render_visual_dashboard(df):
 # --- 메인 실행부 ---
 def main():
     st.set_page_config(page_title="Skin AI Analysis", layout="wide")
-
     # 데이터 로드
     try:
-        db = SheetManager()
-        df = db.get_all_responses_df()
+        df = load_data()
     except Exception as e:
         st.error(f"데이터 연결 실패: {e}")
         df = pd.DataFrame() 
