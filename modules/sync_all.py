@@ -1,5 +1,6 @@
 # pip install gspread google-auth
 # python -m modules.sync_all
+# pip install -r requirements.txt
 from modules.data_manager import SheetManager
 from modules.vector_db import SkinVectorDB
 import pandas as pd

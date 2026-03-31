@@ -1,3 +1,6 @@
+# 동기화(Sync) 전략
+# 시트 내용이 변경될 때마다 벡터 DB를 업데이트
+
 import os
 import re
 import pandas as pd
@@ -23,6 +26,7 @@ class SkinVectorDB:
 
     def clean_text(self, text):
         # --- [성공 포인트 2] 이전 파일의 '최적화 세탁기' 로직 그대로 이식 ---
+        # 유니코드 대리쌍(Surrogate)과 제어문자를 제거하여 임베딩 시 발생할 수 있는 치명적인 에러를 방지합니다.
         if not isinstance(text, str):
             text = str(text)
         
@@ -52,6 +56,7 @@ class SkinVectorDB:
                 content += f"{col}: {val}\n"
             
             # 🔥 저장 전 세탁기 가동 (성공 로직 적용)
+            # 저장 직전에 clean_text를 거치도록 설계되어 DB에 깨끗한 데이터만
             cleaned_content = self.clean_text(content)
             
             doc = Document(

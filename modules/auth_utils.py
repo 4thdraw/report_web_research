@@ -13,6 +13,7 @@ def get_gspread_client():
         creds_dict = {k: v for k, v in st.secrets["gcp_service_account"].items()}
         
         # 핵심: \n 문자열을 실제 줄바꿈으로 변환
+        # 스트림릿 Secrets에 \n이 포함된 문자열을 넣으면, 시스템은 보안과 데이터 보존을 위해 이를 \\n (역슬래시 두 개)로 읽어버리는 경우가 많습니다.
         if "private_key" in creds_dict:
             creds_dict["private_key"] = creds_dict["private_key"].replace("\\n", "\n")
             

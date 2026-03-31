@@ -53,35 +53,55 @@ def render_chatbot_ui():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
+    # 플로팅 버튼
+    if st.button("💬", key="chat_button"):
+        st.session_state.chat_open = not st.session_state.chat_open
+
     # 2. 플로팅 버튼 (버튼 클릭 시 토글)
     if st.button("💬", key="chat_button"):
         st.session_state.chat_open = not st.session_state.chat_open
 
-    # 3. 채팅창 (화면 우측 20~30% 차지하는 슬라이드 느낌의 사이드바/컨테이너)
+    # 3. 채팅창 사이드바
     if st.session_state.chat_open:
-        with st.sidebar: # 가장 간단하게 슬라이드 느낌을 주는 방법은 사이드바 활용입니다.
+        with st.sidebar:
             st.title("🤖 AI 마케팅 어드바이저")
-            st.info("설문 데이터를 기반으로 궁금한 점을 물어보세요!")
+            
+            # --- [FAQ 섹션] 벡터 DB 관련 정보 제공 ---
+            with st.expander("📌 벡터 DB & 데이터 동기화 FAQ", expanded=True):
+                st.markdown("""
+                * **Q. 데이터가 실시간인가요?** 설문 제출 또는 동기화 시점에 `vector_db`에 정제되어 저장됩니다.
+                * **Q. 특수문자 처리는요?** 내부 `clean_text` 로직이 불필요한 기호를 자동 제거합니다.
+                * **Q. 답변의 기준은?** 구글 시트의 질문/응답 데이터를 임베딩하여 분석합니다.
+                """)
+            
+            st.info("데이터를 기반으로 궁금한 점을 물어보세요!")
+            st.divider()
 
-            # 채팅 히스토리 표시
-            chat_container = st.container(height=500)
-           
+            # 채팅 히스토리 및 인터페이스
+            chat_container = st.container(height=400)
+
+            # 첫 방문 시 웰컴 메시지
+            if not st.session_state.messages:
+                welcome = "분석 준비가 완료되었습니다. **다른 질문이 있으신가요?**"
+                st.session_state.messages.append({"role": "assistant", "content": welcome})
 
             for message in st.session_state.messages:
                 with chat_container.chat_message(message["role"]):
                     st.markdown(message["content"])
 
-            # 채팅 입력
-            if prompt := st.chat_input("메시지를 입력하세요..."):
+            # 채팅 입력 및 처리
+            if prompt := st.chat_input("메시지를 입력하세요...", key="chat_input_widget"):
                 st.session_state.messages.append({"role": "user", "content": prompt})
                 with chat_container.chat_message("user"):
                     st.markdown(prompt)
 
                 with chat_container.chat_message("assistant"):
-                    with st.spinner("생각 중..."):
-                        bot = get_chatbot()
-                        response = bot.get_response(prompt, st.session_state.messages[:-1])
+                    with st.spinner("데이터 분석 중..."):
+                        bot = get_chatbot() #
+                        response = bot.get_response(prompt, st.session_state.messages[:-1]) #
                         st.markdown(response)
+                        st.caption("💡 다른 질문이 있으신가요? 언제든 말씀해 주세요.")
+                
                 st.session_state.messages.append({"role": "assistant", "content": response})
 
 
@@ -180,7 +200,9 @@ def main():
 
     elif menu == "AI Prediction":
         st.write("## 🤖 AI 분석 리포트 (준비 중)")
+    # 🔥 쳇봇 UI를 메인 루프 마지막에 한 번만 호출
+    render_chatbot_ui()
 
 if __name__ == "__main__":
     main()
-    render_chatbot_ui()
+    
