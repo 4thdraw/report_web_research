@@ -5,8 +5,8 @@ from modules.data_manager import SheetManager
 
 
 # --- [최적화 1] 질문 데이터 로딩 캐싱 ---
-# ttl(Time To Live)을 설정하여 일정 시간(예: 10분)이 지나면 자동으로 갱신되게 할 수 있습니다.
-@st.cache_data(show_spinner="질문 데이터를 동기화하는 중입니다...")
+# ttl(Time To Live)을 설정하여 일정 시간(예: 30분)이 지나면 자동으로 갱신되게 할 수 있습니다.
+@st.cache_data(ttl=1800, show_spinner="질문 데이터를 동기화하는 중입니다...")
 def fetch_questions():
     db = SheetManager(q_sheet="질문관리", r_sheet="응답결과")
     return db.get_questions()
