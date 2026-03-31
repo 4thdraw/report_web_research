@@ -57,10 +57,7 @@ def render_chatbot_ui():
     if st.button("💬", key="chat_button"):
         st.session_state.chat_open = not st.session_state.chat_open
 
-    # 2. 플로팅 버튼 (버튼 클릭 시 토글)
-    if st.button("💬", key="chat_button"):
-        st.session_state.chat_open = not st.session_state.chat_open
-
+  
     # 3. 채팅창 사이드바
     if st.session_state.chat_open:
         with st.sidebar:

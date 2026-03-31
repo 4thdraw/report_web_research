@@ -11,6 +11,8 @@ from langchain_core.documents import Document
 from dotenv import load_dotenv
 
 load_dotenv()
+# Hugging Face 토큰 경고 방지 (익명 허용)
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 
 class SkinVectorDB:
     def __init__(self):
@@ -20,6 +22,13 @@ class SkinVectorDB:
         self.embeddings = HuggingFaceEmbeddings(
             model_name=self.model_name
         )
+        # 모델을 처음 실행할 때 한 번 다운로드하며, 이후에는 로컬 캐시를 사용합니다.
+        # model_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+        # self.embeddings = HuggingFaceEmbeddings(
+        #     model_name=model_name,
+        #     model_kwargs={'device': 'cpu'}, # GPU가 없다면 cpu 강제 지정
+        #     encode_kwargs={'normalize_embeddings': True}
+        # )
         
         # 저장 경로
         self.persist_directory = os.path.join(os.getcwd(), "chroma_db")

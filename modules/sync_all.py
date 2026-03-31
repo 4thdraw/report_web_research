@@ -1,5 +1,6 @@
-# pip install gspread google-auth
+# pip install gspread google-auth langchain_chroma sentence-transformers
 # python -m modules.sync_all
+# 모듈실행명령 modules라는 '패키지' 안에 들어있는 sync_all이라는 **'모듈'**을 찾아서 실행
 # pip install -r requirements.txt
 from modules.data_manager import SheetManager
 from modules.vector_db import SkinVectorDB

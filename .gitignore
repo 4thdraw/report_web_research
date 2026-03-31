@@ -2,4 +2,3 @@
 .streamlit/secrets.toml
 **/key.json
 __pycache__/
-chroma_db/
