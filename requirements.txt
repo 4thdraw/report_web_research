@@ -88,7 +88,7 @@ opentelemetry-semantic-conventions==0.61b0
 orjson==3.11.7
 ormsgpack==1.12.2
 overrides==7.7.0
-packaging @ file:///C:/miniconda3/conda-bld/packaging_1761049096285/work
+packaging 
 pandas==2.3.3
 pillow==12.1.1
 propcache==0.4.1
