@@ -19,3 +19,5 @@ my-skin-survey/
     └── form/
         ├── __init__.py # 폴더 내 임포트를 위해 필요
         └── normal.py   # 기존 app.py의 설문 폼 로직
+
+pip install -r requirements.txt 명령주기
